@@ -115,15 +115,10 @@ namespace ChallengerBot
                 SummonerName    = Packets.AllSummonerData.Summoner.Name;
                 SummonerID      = Packets.AllSummonerData.Summoner.SumId;
 
-                // Session
-                Session.OpenSession(AccountName);
-                Session.WriteMessage("Player (lv. " + SummonerLevel + ")" + SummonerName + " successfully logged in.");
-                Session.WriteMessage("IP Balance before game: " + Packets.IpBalance);
 
                 if (SummonerLevel > Core.MaxLevel || SummonerLevel == Core.MaxLevel)
                 {
                     Connections.Error("Summoner has reached maximum level!", ErrorType.MaxLevelReached);
-                    Session.WriteMessage("Player " + SummonerName + " successfully reached max set level.");
                     return;
                 }
                     
@@ -159,7 +154,6 @@ namespace ChallengerBot
                     CreatePremade.Elapsed += (ek, eo) =>
                     {
                         CreatePremade.Stop();
-                        Session.WriteMessage("Player " + SummonerName + " will create lobby.");
                         OnMessageReceived(sender, (object)new CreateLobby());
                     };
                     CreatePremade.Start();
@@ -167,7 +161,6 @@ namespace ChallengerBot
                 }
                 else
                 {
-                    Session.WriteMessage("Player " + SummonerName + " is waiting for invite.");
                     Core.Register(SummonerID);
                 }
             }
@@ -189,7 +182,6 @@ namespace ChallengerBot
 
                 PlayerAcceptedInvite = true;
                 Core.Status("Lobby successfully created.", AccountName);
-                Session.WriteMessage("Player " + SummonerName + " have created lobby. Inviting other players..");
 
                 // Invite other players.
                 foreach (var bot in Core.SummonerIDs)
@@ -208,7 +200,6 @@ namespace ChallengerBot
                     Core.Lobby = await Connections.AcceptLobby(Invitation.InvitationId);
                     PlayerAcceptedInvite = true;
                     Core.Status("Invitation accepted.", AccountName);
-                    Session.WriteMessage("Player " + SummonerName + " accepted invite.");
                     return;
                 }
             }
@@ -262,7 +253,6 @@ namespace ChallengerBot
                 #endregion
                 
                 OnMessageReceived(sender, await Connections.AttachTeamToQueue(Core.LobbyGame));
-                Session.WriteMessage("Player " + SummonerName + " has started matchmaking...");
                 Core.Status("Team has been attached to queue", AccountName);
                 return;
             }
@@ -369,7 +359,6 @@ namespace ChallengerBot
                 if (SLevel != ASLevel)
                     OnPlayerLevel();
 
-                Session.CloseSession();
                 Thread.Sleep(2000);
                 OnMessageReceived(sender, new ClientBeforeStart());
                 return;
@@ -411,7 +400,6 @@ namespace ChallengerBot
                         Debug.WriteLine("Time wait" + TimeWait + "ms." + "Counted summoners: " + Summoners.Count + "; Summoners: " + Players);
                         Core.Status("Waiting " + Time.Minutes + " to be able to join queue", AccountName);
                         Thread.Sleep(TimeWait + 5000);
-                        Session.WriteMessage("Player " + SummonerName + " successfully joined lower queue!");
 
                         if (SummonerName == Core.Lobby.Owner.SummonerName)
                         {
@@ -460,7 +448,6 @@ namespace ChallengerBot
                 HttpContent httpContent = new FormUrlEncodedContent(storeItemList);
                 await httpClient.PostAsync(purchaseURL, httpContent);
                 Core.Status("Bought XP boost!", AccountName);
-                Session.WriteMessage("Player " + SummonerName + " has bought XP boost!");
                 httpClient.Dispose();
             }
         }
@@ -471,7 +458,6 @@ namespace ChallengerBot
             Packets = await Connections.GetLoginDataPacketForUser();
             if (Packets.ReconnectInfo != null && Packets.ReconnectInfo.Game != null)
             {
-                Session.WriteMessage("Game is going to be restored!");
                 OnMessageReceived(sender, (object)Packets.ReconnectInfo.PlayerCredentials);
             }                
         }
@@ -485,7 +471,6 @@ namespace ChallengerBot
 
             await Connections.CreateDefaultSummoner(summonerName);
             Core.Status("Created summoner: " + summonerName, AccountName);
-            Session.WriteMessage("Player " + summonerName + " has been created!");
         }
 
         private async void SetSummonerIcon()

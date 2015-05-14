@@ -56,69 +56,10 @@ namespace ChallengerBot
         public static void Restart()
         {
             var BotClient = Process.Start("ChallengerBot.exe");
-
-            if (Session.IsOpen())
-                Session.CloseSession();
        
             Thread.Sleep(1000);
             Environment.Exit(0);
             return;
-        }
-    } 
-
-    public static class Session
-    {
-        private static List<Tuple<string, string>> DebugMessages = new List<Tuple<string, string>>();
-        private static string TimeString = Core.Time();
-        private static string SessionName = null;
-        private static string Account = null;
-        private static bool Disabled = true;
-
-        public static void OpenSession(string SessionAccount)
-        {
-            SessionName = "GameID - " + Random();
-            Account = SessionAccount;
-            return;
-        }
-
-        public static void WriteMessage(string message, bool time = true)
-        {
-            var MessageTime = (time) ? TimeString : "";
-            DebugMessages.Add(new Tuple<string, string>(Account, MessageTime + message));
-            return;
-        }
-
-        public static string Random()
-        {
-            var chars = "qwertyuiopasdfhjklzxcvbnmABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var result = new string(
-                Enumerable.Repeat(chars, 8)
-                          .Select(s => s[random.Next(s.Length)])
-                          .ToArray());
-
-            return result;
-        }
-
-        public static void CloseSession()
-        {
-            if (DebugMessages.Count < 1 || Disabled)
-                return;
-
-              
-            using (StreamWriter Session = new StreamWriter("PVPNetConnection\\SessionDebug\\" + SessionName + ".txt", true))
-            {
-                Session.Write(JsonConvert.SerializeObject(DebugMessages, Formatting.Indented));
-                Session.Close();
-            }
-
-            SessionName = null;
-            return;
-        }
-
-        public static bool IsOpen()
-        {
-            return (DebugMessages.Count > 0);
         }
     }
 }
