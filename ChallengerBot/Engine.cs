@@ -82,8 +82,8 @@ namespace ChallengerBot
             Connections.OnMessageReceived += new PVPNetConnection.OnMessageReceivedHandler(OnMessageReceived);
             #endregion
 
-           // Connections.Connect(AccountName, SummonerPassword, CurRegion, Core.ClientVersion);
-            Console.WriteLine(Core.ClientVersion);
+            Connections.Connect(AccountName, SummonerPassword, CurRegion, Core.ClientVersion);
+            //Console.WriteLine(Core.ClientVersion);
             return;
         }
 
